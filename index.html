@@ -328,7 +328,7 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
   .meta-row{justify-content:space-between;}
   .customer{grid-template-columns:1fr;}
   
-  /* TABLO MOBİL DÜZENLEME */
+  /* TABLO MOBİL DÜZENLEME - SELECT'LER ÇALIŞSIN */
   table.items, table.items tbody, table.items tr, table.items td {
     display: block;
     width: 100%;
@@ -351,13 +351,98 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
     background: #fff;
   }
   
+  /* Her bir hücreyi flex olmadan, blok olarak düzenle */
   table.items td {
     border: none !important;
     padding: 4px 0 !important;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    display: block !important; /* flex yerine block */
     min-height: 36px;
+    width: 100%;
+    clear: both;
+  }
+  
+  /* Etiketleri ::before ile ekle - sadece içerik olarak */
+  td.col-grp::before {
+    content: "Grup:";
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 11px;
+    display: inline-block;
+    width: 60px;
+    flex-shrink: 0;
+  }
+  
+  td.col-stok::before {
+    content: "Stok:";
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 11px;
+    display: inline-block;
+    width: 60px;
+    flex-shrink: 0;
+  }
+  
+  td.col-desc::before {
+    content: "Açıklama:";
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 11px;
+    display: inline-block;
+    width: 60px;
+    flex-shrink: 0;
+  }
+  
+  td.col-qty::before {
+    content: "Miktar:";
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 11px;
+    display: inline-block;
+    width: 60px;
+    flex-shrink: 0;
+  }
+  
+  td.col-price::before {
+    content: "Fiyat:";
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 11px;
+    display: inline-block;
+    width: 60px;
+    flex-shrink: 0;
+  }
+  
+  td.col-kdv::before {
+    content: "KDV:";
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 11px;
+    display: inline-block;
+    width: 60px;
+    flex-shrink: 0;
+  }
+  
+  /* Toplam - alt kısımda belirgin */
+  td.col-total {
+    padding-top: 6px !important;
+    margin-top: 4px;
+    border-top: 1px dashed var(--line-soft) !important;
+  }
+  
+  td.col-total::before {
+    content: "Toplam:";
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 13px;
+    display: inline-block;
+    width: 60px;
+    flex-shrink: 0;
+  }
+  
+  td.col-total .rowTotal {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
   }
   
   /* Numara - sağ üstte */
@@ -368,7 +453,13 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
     padding: 0 !important;
     font-size: 12px;
     color: var(--muted);
-    justify-content: flex-end;
+    text-align: right;
+    display: block !important;
+    width: auto;
+    border: none !important;
+  }
+  td.col-num::before {
+    display: none !important;
   }
   
   /* Silme butonu - sol üstte */
@@ -378,6 +469,11 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
     left: 6px;
     width: auto;
     padding: 0 !important;
+    display: block !important;
+    border: none !important;
+  }
+  td.col-del::before {
+    display: none !important;
   }
   
   td.col-del .row-del-btn {
@@ -385,94 +481,26 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
     padding: 2px 6px;
   }
   
-  /* Etiketler */
-  td.col-grp::before {
-    content: "Grup:";
-    font-weight: 600;
-    color: var(--muted);
-    font-size: 11px;
-    min-width: 50px;
-    flex-shrink: 0;
-  }
-  
-  td.col-stok::before {
-    content: "Stok:";
-    font-weight: 600;
-    color: var(--muted);
-    font-size: 11px;
-    min-width: 50px;
-    flex-shrink: 0;
-  }
-  
-  td.col-desc::before {
-    content: "Açıklama:";
-    font-weight: 600;
-    color: var(--muted);
-    font-size: 11px;
-    min-width: 50px;
-    flex-shrink: 0;
-  }
-  
-  td.col-qty::before {
-    content: "Miktar:";
-    font-weight: 600;
-    color: var(--muted);
-    font-size: 11px;
-    min-width: 50px;
-    flex-shrink: 0;
-  }
-  
-  td.col-price::before {
-    content: "Fiyat:";
-    font-weight: 600;
-    color: var(--muted);
-    font-size: 11px;
-    min-width: 50px;
-    flex-shrink: 0;
-  }
-  
-  td.col-kdv::before {
-    content: "KDV:";
-    font-weight: 600;
-    color: var(--muted);
-    font-size: 11px;
-    min-width: 50px;
-    flex-shrink: 0;
-  }
-  
-  /* Toplam - alt kısımda belirgin */
-  td.col-total {
-    padding-top: 6px !important;
-    margin-top: 4px;
-    border-top: 1px dashed var(--line-soft) !important;
-    justify-content: space-between;
-  }
-  
-  td.col-total::before {
-    content: "Toplam:";
-    font-weight: 700;
-    color: var(--ink);
-    font-size: 13px;
-    min-width: 50px;
-    flex-shrink: 0;
-  }
-  
-  td.col-total .rowTotal {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--accent);
-  }
-  
-  /* Input'lar tam genişlik */
+  /* Select ve input'lar - tıklanabilir olsun */
   table.items td select,
   table.items td input {
-    width: 100%;
-    max-width: 180px;
-    padding: 4px 6px;
-    font-size: 13px;
+    width: calc(100% - 60px);
+    max-width: 200px;
+    padding: 8px 6px;
+    font-size: 14px;
     border: 1px solid var(--line);
     border-radius: 3px;
     background: #fff;
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-appearance: auto; /* iOS için önemli */
+    appearance: auto;
+  }
+  
+  /* Select'lerin tıklanabilirliğini artır */
+  table.items td select {
+    min-height: 38px;
+    cursor: pointer;
   }
   
   table.items td select:focus,
@@ -484,15 +512,20 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
   table.items td .helper {
     font-size: 12px;
     color: var(--muted);
+    display: inline-block;
+    vertical-align: middle;
   }
   
+  /* Grup ve stok alanları */
   td.col-grp, td.col-stok {
-    flex-wrap: wrap;
+    display: block !important;
+    width: 100%;
   }
   
   td.col-grp select, td.col-stok select {
     flex: 1;
     min-width: 80px;
+    width: calc(100% - 60px);
   }
   
   .sheet{padding:14px;}
@@ -535,6 +568,31 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
   .edit-only{display:none !important;}
   a{color:var(--ink); text-decoration:none;}
 }
+/* ===== İOS SELECT FİX - BURAYA EKLEYİN ===== */
+/* iOS Safari'de select'lerin tıklanabilirliğini artır */
+select {
+  -webkit-appearance: auto;
+  appearance: auto;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+/* iOS'ta select'lerin üzerine gelindiğinde imleç değişimi */
+select:hover, select:active {
+  cursor: pointer;
+}
+
+/* Mobilde select'lerin min-height'ını artır */
+@media (pointer: coarse) {
+  select, 
+  table.items td select,
+  input[type="text"],
+  input[type="number"] {
+    min-height: 40px;
+    font-size: 16px !important; /* iOS zoom'u engeller */
+  }
+}
+  
 </style>
 </head>
 <body>
