@@ -10,9 +10,6 @@
 <title>Artı 16 Reklam - Teklif Formu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<!-- PDF KÜTÜPHANELERİ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{
   --ink:#171614;
@@ -364,14 +361,12 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
   .meta-row{justify-content:space-between;}
   .customer{grid-template-columns:1fr;}
   
-  /* Brand sola yaslı */
   .brand{width:100%;}
   .brand-info .company-name{font-size:18px;}
   .brand-info .addr{font-size:12px;}
   .brand-info .contact{font-size:12px;}
   .doc-meta .doc-label{font-size:18px;}
   
-  /* TABLO MOBİL DÜZENLEME - SELECT'LER ÇALIŞSIN */
   table.items, table.items tbody, table.items tr, table.items td {
     display: block;
     width: 100%;
@@ -394,7 +389,6 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
     background: #fff;
   }
   
-  /* Her bir hücreyi flex olmadan, blok olarak düzenle */
   table.items td {
     border: none !important;
     padding: 4px 0 !important;
@@ -404,7 +398,6 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
     clear: both;
   }
   
-  /* Etiketleri ::before ile ekle */
   td.col-grp::before {
     content: "Grup:";
     font-weight: 600;
@@ -465,7 +458,6 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
     flex-shrink: 0;
   }
   
-  /* Toplam - alt kısımda belirgin */
   td.col-total {
     padding-top: 6px !important;
     margin-top: 4px;
@@ -488,7 +480,6 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
     color: var(--accent);
   }
   
-  /* Numara - sağ üstte */
   td.col-num {
     position: absolute;
     top: 6px;
@@ -505,7 +496,6 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
     display: none !important;
   }
   
-  /* Silme butonu - sol üstte */
   td.col-del {
     position: absolute;
     top: 2px;
@@ -524,7 +514,6 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
     padding: 2px 6px;
   }
   
-  /* Select ve input'lar - tıklanabilir olsun */
   table.items td select,
   table.items td input {
     width: calc(100% - 60px);
@@ -540,7 +529,6 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
     appearance: auto;
   }
   
-  /* Select'lerin tıklanabilirliğini artır */
   table.items td select {
     min-height: 38px;
     cursor: pointer;
@@ -559,7 +547,6 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
     vertical-align: middle;
   }
   
-  /* Grup ve stok alanları */
   td.col-grp, td.col-stok {
     display: block !important;
     width: 100%;
@@ -588,7 +575,6 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
     font-size: 16px;
   }
   
-  /* Ekle butonları */
   .add-row-buttons {
     flex-wrap: wrap;
     gap: 8px;
@@ -603,7 +589,10 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
 
 /* ===== Print (A4 PDF) ===== */
 @media print{
-  @page{ size:A4; margin:12mm; }
+  @page{ 
+    size: A4; 
+    margin: 10mm 12mm 10mm 12mm;
+  }
   html,body{background:#fff;}
   .toolbar, .no-print{display:none !important;}
   .wrap{max-width:none; margin:0; padding:0;}
@@ -620,19 +609,17 @@ select {
   touch-action: manipulation;
 }
 
-/* iOS'ta select'lerin üzerine gelindiğinde imleç değişimi */
 select:hover, select:active {
   cursor: pointer;
 }
 
-/* Mobilde select'lerin min-height'ını artır */
 @media (pointer: coarse) {
   select, 
   table.items td select,
   input[type="text"],
   input[type="number"] {
     min-height: 40px;
-    font-size: 16px !important; /* iOS zoom'u engeller */
+    font-size: 16px !important;
   }
 }
 </style>
@@ -645,7 +632,7 @@ select:hover, select:active {
   <button class="btn btn-ghost-dark" id="btnSave">Kaydet</button>
   <button class="btn btn-ghost-dark" id="btnNew">Yeni Teklif</button>
   <button class="btn btn-ghost-dark" id="btnWhatsapp">WhatsApp'a Gönder</button>
-  <button class="btn btn-accent" id="btnPdf">📄 PDF Oluştur</button>
+  <button class="btn btn-accent" id="btnPdf">📄 PDF Oluştur / Paylaş</button>
 </div>
 
 <div class="wrap">
@@ -1388,7 +1375,7 @@ function validateRequired(){
   return ok;
 }
 
-/* ============ PDF OLUŞTUR VE PAYLAŞ ============ */
+/* ============ PDF OLUŞTUR (YAZDIRMA MOTORU İLE) ============ */
 function generatePDF() {
   if (!validateRequired()) {
     alert("Lütfen zorunlu alanları doldurun: Ünvan ve Telefon.");
@@ -1397,69 +1384,20 @@ function generatePDF() {
   
   saveCurrentQuote(true);
   
+  // Print moduna geç
   document.body.classList.add("print-mode");
   buildPrintView();
   
-  const btnPdf = document.getElementById("btnPdf");
-  const originalText = btnPdf.textContent;
-  btnPdf.textContent = "⏳ Oluşturuluyor...";
-  btnPdf.disabled = true;
+  // iOS'ta paylaşım için print'i yakalayamıyoruz, bu yüzden doğrudan window.print() kullan
+  // Ama önce bir uyarı gösterelim
+  alert("PDF oluşturmak için aşağıdaki yazdırma ekranında 'PDF olarak kaydet' seçeneğini kullanın.\n\n📱 iOS: Paylaş butonuna tıklayıp 'Dosya'ya Kaydet veya AirDrop ile paylaşabilirsiniz.");
   
+  window.print();
+  
+  // Print sonrası modu kaldır
   setTimeout(() => {
-    const element = document.getElementById("sheet");
-    
-    html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#ffffff',
-      logging: false,
-      width: element.scrollWidth,
-      height: element.scrollHeight,
-      windowWidth: element.scrollWidth,
-      windowHeight: element.scrollHeight
-    }).then(canvas => {
-      document.body.classList.remove("print-mode");
-      btnPdf.textContent = originalText;
-      btnPdf.disabled = false;
-      
-      const imgData = canvas.toDataURL('image/png');
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      
-      const fileName = `teklif_${currentTeklifNo || 'yeni'}.pdf`;
-      const pdfBlob = pdf.output('blob');
-      
-      // Önce paylaşım seçeneğini dene (iOS, Android)
-      if (navigator.share) {
-        const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
-        navigator.share({
-          files: [file],
-          title: 'Teklif PDF',
-          text: `${currentTeklifNo} numaralı teklif`
-        }).catch(err => {
-          if (err.name !== 'AbortError') {
-            // Paylaşım başarısız olursa indir
-            pdf.save(fileName);
-          }
-        });
-      } else {
-        // Paylaşım API yoksa direkt indir
-        pdf.save(fileName);
-      }
-      
-    }).catch(err => {
-      document.body.classList.remove("print-mode");
-      btnPdf.textContent = originalText;
-      btnPdf.disabled = false;
-      console.error('PDF oluşturulamadı:', err);
-      alert('PDF oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.');
-    });
-  }, 500);
+    document.body.classList.remove("print-mode");
+  }, 1000);
 }
 
 /* ============ WHATSAPP'A GÖNDER ============ */
