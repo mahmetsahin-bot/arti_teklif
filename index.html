@@ -10,6 +10,9 @@
 <title>Artı 16 Reklam - Teklif Formu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- PDF KÜTÜPHANELERİ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{
   --ink:#171614;
@@ -80,15 +83,50 @@ body{
   display:flex; justify-content:space-between; align-items:flex-start;
   gap:24px; padding-bottom:14px; border-bottom:3px solid var(--ink); margin-bottom:16px;
 }
-.brand{display:flex; gap:16px; align-items:flex-start;}
-.brand img{height:64px; width:auto; display:block;}
-.brand-info{text-align:right;}
-.brand-info .company-name{font-family:'Archivo Black',sans-serif; font-size:16px; letter-spacing:.01em;}
-.brand-info .owner{font-size:13px; color:var(--muted); margin-top:2px; font-weight:600;}
-.brand-info .addr{font-size:12px; color:var(--muted); margin-top:8px; max-width:280px; line-height:1.5; margin-left:auto;}
-.brand-info .contact{font-size:12px; margin-top:6px; display:flex; flex-direction:column; gap:2px; align-items:flex-end;}
-.brand-info .contact a{color:var(--ink); text-decoration:none; font-weight:600;}
-.brand-info .contact a:hover{color:var(--accent);}
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+.brand-info {
+  text-align: left !important;
+  width: 100%;
+}
+.brand-info .company-name {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 20px;
+  letter-spacing: .02em;
+}
+.brand-info .owner {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 2px;
+  font-weight: 600;
+}
+.brand-info .addr {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 6px;
+  max-width: 100%;
+  line-height: 1.6;
+}
+.brand-info .contact {
+  font-size: 13px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+.brand-info .contact a {
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 600;
+}
+.brand-info .contact a:hover {
+  color: var(--accent);
+}
 
 .doc-meta{
   text-align:right; min-width:210px;
@@ -284,9 +322,7 @@ td.col-del{width:30px; text-align:center;}
   .history-item .hi-total{margin-left:auto;}
 }
 
-/* ===== Print-mode (used by BOTH native print and PDF/canvas export) =====
-   html2canvas ignores @media print, so visibility must be driven by a
-   real class toggle that applies during screenshot capture too. */
+/* ===== Print-mode ===== */
 .print-only{display:none;}
 .avoid-break{break-inside:avoid; page-break-inside:avoid;}
 body.print-mode .edit-only{display:none !important;}
@@ -320,13 +356,20 @@ table.print-items td.pkdv{width:52px; text-align:right; color:var(--muted); font
 table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font-variant-numeric:tabular-nums;}
 
 /* ============================================================
-   MOBIL GÖRÜNÜM (761px ve altı) - TABLO SORUNU DÜZELTİLDİ
+   MOBIL GÖRÜNÜM (761px ve altı)
    ============================================================ */
 @media screen and (max-width:760px){
-  .doc-header{flex-direction:column;}
+  .doc-header{flex-direction:column; gap:16px;}
   .doc-meta{text-align:left; width:100%;}
   .meta-row{justify-content:space-between;}
   .customer{grid-template-columns:1fr;}
+  
+  /* Brand sola yaslı */
+  .brand{width:100%;}
+  .brand-info .company-name{font-size:18px;}
+  .brand-info .addr{font-size:12px;}
+  .brand-info .contact{font-size:12px;}
+  .doc-meta .doc-label{font-size:18px;}
   
   /* TABLO MOBİL DÜZENLEME - SELECT'LER ÇALIŞSIN */
   table.items, table.items tbody, table.items tr, table.items td {
@@ -355,13 +398,13 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
   table.items td {
     border: none !important;
     padding: 4px 0 !important;
-    display: block !important; /* flex yerine block */
+    display: block !important;
     min-height: 36px;
     width: 100%;
     clear: both;
   }
   
-  /* Etiketleri ::before ile ekle - sadece içerik olarak */
+  /* Etiketleri ::before ile ekle */
   td.col-grp::before {
     content: "Grup:";
     font-weight: 600;
@@ -493,7 +536,7 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
     background: #fff;
     display: inline-block;
     vertical-align: middle;
-    -webkit-appearance: auto; /* iOS için önemli */
+    -webkit-appearance: auto;
     appearance: auto;
   }
   
@@ -568,7 +611,7 @@ table.print-items td.ptotal{width:100px; text-align:right; font-weight:700; font
   .edit-only{display:none !important;}
   a{color:var(--ink); text-decoration:none;}
 }
-/* ===== İOS SELECT FİX - BURAYA EKLEYİN ===== */
+
 /* iOS Safari'de select'lerin tıklanabilirliğini artır */
 select {
   -webkit-appearance: auto;
@@ -592,7 +635,6 @@ select:hover, select:active {
     font-size: 16px !important; /* iOS zoom'u engeller */
   }
 }
-  
 </style>
 </head>
 <body>
@@ -603,36 +645,36 @@ select:hover, select:active {
   <button class="btn btn-ghost-dark" id="btnSave">Kaydet</button>
   <button class="btn btn-ghost-dark" id="btnNew">Yeni Teklif</button>
   <button class="btn btn-ghost-dark" id="btnWhatsapp">WhatsApp'a Gönder</button>
-  <button class="btn btn-accent" id="btnPdf">PDF Al / Yazdır</button>
+  <button class="btn btn-accent" id="btnPdf">📄 PDF Oluştur</button>
 </div>
 
 <div class="wrap">
   <div class="sheet" id="sheet">
 
-   <!-- HEADER -->
-<div class="doc-header avoid-break">
-  <div class="brand">
-    <div class="brand-info">
-      <div class="company-name">ARTI 16 REKLAM</div>
-      <div class="owner">Mümün ÖZTÜRK</div>
-      <div class="addr">Konak Mahallesi 1. Bulut Sokak No:32/C<br>Nilüfer / BURSA</div>
-      <div class="contact">
-        <a href="tel:05335043666">0533 504 36 66</a>
-        <a href="mailto:arti16reklam@hotmail.com">arti16reklam@hotmail.com</a>
+    <!-- HEADER -->
+    <div class="doc-header avoid-break">
+      <div class="brand">
+        <div class="brand-info">
+          <div class="company-name">ARTI 16 REKLAM</div>
+          <div class="owner">Mümün ÖZTÜRK</div>
+          <div class="addr">Konak Mahallesi 1. Bulut Sokak No:32/C<br>Nilüfer / BURSA</div>
+          <div class="contact">
+            <a href="tel:05335043666">0533 504 36 66</a>
+            <a href="mailto:arti16reklam@hotmail.com">arti16reklam@hotmail.com</a>
+          </div>
+        </div>
+      </div>
+      <div class="doc-meta">
+        <div class="doc-label">TEKLİF</div>
+        <div class="meta-box">
+          <div class="meta-row"><span class="k">Teklif No</span><span class="v" id="teklifNoDisplay">—</span></div>
+          <div class="meta-row edit-only"><span class="k">Tarih</span><input type="date" id="teklifTarihi"></div>
+          <div class="meta-row edit-only"><span class="k">Teklif Geçerlilik Tarihi</span><span class="v" id="vadeTarihiDisplay">—</span><input type="hidden" id="vadeTarihi"></div>
+          <div class="meta-row print-only"><span class="k">Tarih</span><span class="v" id="printTarih">—</span></div>
+          <div class="meta-row print-only"><span class="k">Teklif Geçerlilik Tarihi</span><span class="v" id="printVade">—</span></div>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="doc-meta">
-    <div class="doc-label">TEKLİF</div>
-    <div class="meta-box">
-      <div class="meta-row"><span class="k">Teklif No</span><span class="v" id="teklifNoDisplay">—</span></div>
-      <div class="meta-row edit-only"><span class="k">Tarih</span><input type="date" id="teklifTarihi"></div>
-      <div class="meta-row edit-only"><span class="k">Teklif Geçerlilik Tarihi</span><span class="v" id="vadeTarihiDisplay">—</span><input type="hidden" id="vadeTarihi"></div>
-      <div class="meta-row print-only"><span class="k">Tarih</span><span class="v" id="printTarih">—</span></div>
-      <div class="meta-row print-only"><span class="k">Teklif Geçerlilik Tarihi</span><span class="v" id="printVade">—</span></div>
-    </div>
-  </div>
-</div>
 
     <!-- CUSTOMER -->
     <div class="section-label">Müşteri Bilgileri</div>
@@ -694,7 +736,7 @@ select:hover, select:active {
       </div>
     </div>
 
-    <!-- ITEMS (print / PDF view -- only filled, written content) -->
+    <!-- ITEMS (print / PDF view) -->
     <table class="print-items print-only">
       <thead>
         <tr>
@@ -732,7 +774,7 @@ select:hover, select:active {
       <div class="photo-grid" id="photoGridPrint"></div>
     </div>
 
-    <!-- NOTES + APPROVAL/STAMP (tek satırda, kaşe-imza sağda küçük kare) -->
+    <!-- NOTES + APPROVAL/STAMP -->
     <div class="notes-stamp-wrap avoid-break">
       <div class="notes">
         <div class="section-label">Açıklamalar</div>
@@ -806,7 +848,7 @@ const LS_KEY_QUOTES = "arti16_teklifler_v1";
 const LS_KEY_CUSTOMERS = "arti16_musteriler_v1";
 
 let rowCounter = 0;
-let photos = []; // {name, dataUrl}
+let photos = [];
 
 /* ============ TEKLİF NO ============ */
 function getNextTeklifNo(){
@@ -872,7 +914,7 @@ function buildGrupOptions(selectedGrup){
   return html;
 }
 
-function addRow(type){ // type: "stok" | "manual"
+function addRow(type){
   rowCounter++;
   const id = "row"+rowCounter;
   const tr = document.createElement("tr");
@@ -976,20 +1018,16 @@ function renderPhotos(){
   });
 }
 
-/* ============ TEMİZ (SADECE DOLU ALANLAR) GÖRÜNÜM ============
-   Yazdırma/PDF öncesi çağrılır: boş dropdown, "Seçiniz" gibi form
-   elemanları yerine sadece girilmiş, yazılı bilgileri üretir. */
+/* ============ YAZDIRMA GÖRÜNÜMÜ ============ */
 function fmtDateTR(iso){
   if(!iso) return "";
   const [y,m,d] = iso.split("-");
   return `${d}.${m}.${y}`;
 }
 function buildPrintView(){
-  // Tarih / vade
   document.getElementById("printTarih").textContent = fmtDateTR(document.getElementById("teklifTarihi").value) || "—";
   document.getElementById("printVade").textContent = fmtDateTR(document.getElementById("vadeTarihi").value) || "—";
 
-  // Müşteri özeti -- sadece dolu alanlar
   const unvan = document.getElementById("custUnvan").value.trim();
   const tel = document.getElementById("custTel").value.trim();
   const adres = document.getElementById("custAdres").value.trim();
@@ -1001,7 +1039,6 @@ function buildPrintView(){
   if(mail)  custHtml += `<div class="print-cust"><b>E-posta:</b> ${escapeHtml(mail)}</div>`;
   document.getElementById("printCustomer").innerHTML = custHtml || `<div class="print-cust">—</div>`;
 
-  // Kalemler -- boş satırlar hariç, sadece yazılı içerik
   const printBody = document.getElementById("printItemsBody");
   printBody.innerHTML = "";
   let rowNo = 0;
@@ -1010,7 +1047,7 @@ function buildPrintView(){
     const desc = descInput ? descInput.value.trim() : "";
     const qty = parseFloat(tr.querySelector(".qtyInput").value) || 0;
     const price = parseFloat(tr.querySelector(".priceInput").value) || 0;
-    if(!desc && qty === 0 && price === 0) return; // tamamen boş satırı atla
+    if(!desc && qty === 0 && price === 0) return;
     rowNo++;
     const lineTotal = qty * price;
     const ptr = document.createElement("tr");
@@ -1026,7 +1063,6 @@ function buildPrintView(){
     printBody.appendChild(ptr);
   });
 
-  // Fotoğraflar -- sadece eklenmişse alan açılsın
   const printPhotoSection = document.getElementById("photoSectionPrint");
   const printPhotoGrid = document.getElementById("photoGridPrint");
   if(photos.length > 0){
@@ -1039,7 +1075,6 @@ function buildPrintView(){
     printPhotoGrid.innerHTML = "";
   }
 
-  // Ek açıklama -- boşsa hiç gösterme
   const extra = document.getElementById("extraNotes").value.trim();
   const printExtra = document.getElementById("printExtraNotes");
   printExtra.textContent = extra;
@@ -1085,10 +1120,7 @@ function updateWaLink(){
   }
 }
 
-/* ============ GEÇMİŞ TEKLİFLER + MÜŞTERİ VERİTABANI ============
-   Tarayıcının yerel depolamasında (localStorage) tutulur -- bu dosyanın
-   açıldığı tarayıcı/cihaza özeldir. Yedekleme için "Yedekle" ile JSON
-   indirip "İçe Aktar" ile başka bir cihaza taşınabilir. */
+/* ============ GEÇMİŞ TEKLİFLER ============ */
 function loadQuotes(){
   try{ return JSON.parse(localStorage.getItem(LS_KEY_QUOTES) || "[]"); }catch(e){ return []; }
 }
@@ -1156,7 +1188,7 @@ function upsertCustomer(cust){
 function saveCurrentQuote(silent){
   const data = collectCurrentQuoteData();
   if(!data.musteri.unvan && !data.musteri.tel && data.items.length === 0){
-    if(!silent) alert("Kaydedilecek bir bilgi yok -- önce müşteri ve kalem bilgilerini girin.");
+    if(!silent) alert("Kaydedilecek bir bilgi yok — önce müşteri ve kalem bilgilerini girin.");
     return false;
   }
   upsertQuote(data);
@@ -1189,7 +1221,7 @@ function applyCustomerPick(idx){
   updateWaLink();
 }
 
-/* ---- Geçmiş teklifler listesi / açma / silme ---- */
+/* ---- Geçmiş teklifler listesi ---- */
 function renderHistoryList(filter){
   const list = document.getElementById("historyList");
   let quotes = loadQuotes().sort((a,b)=> (b.guncelleme||"").localeCompare(a.guncelleme||""));
@@ -1356,23 +1388,81 @@ function validateRequired(){
   return ok;
 }
 
-/* ============ PDF (TARAYICI YAZDIRMA MOTORU İLE) ============
-   Önceki html2canvas tabanlı yöntem yazı tiplerini/tabloyu bazen yanlış
-   hizalıyordu. Artık PDF, ekrandakiyle birebir aynı olması garanti olan
-   tarayıcının kendi "Yazdır > PDF olarak kaydet" motoruyla üretiliyor. */
-function openPrintForPdf(){
-  if(!validateRequired()){
+/* ============ PDF OLUŞTUR VE PAYLAŞ ============ */
+function generatePDF() {
+  if (!validateRequired()) {
     alert("Lütfen zorunlu alanları doldurun: Ünvan ve Telefon.");
     return;
   }
+  
   saveCurrentQuote(true);
-  window.print();
+  
+  document.body.classList.add("print-mode");
+  buildPrintView();
+  
+  const btnPdf = document.getElementById("btnPdf");
+  const originalText = btnPdf.textContent;
+  btnPdf.textContent = "⏳ Oluşturuluyor...";
+  btnPdf.disabled = true;
+  
+  setTimeout(() => {
+    const element = document.getElementById("sheet");
+    
+    html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      width: element.scrollWidth,
+      height: element.scrollHeight,
+      windowWidth: element.scrollWidth,
+      windowHeight: element.scrollHeight
+    }).then(canvas => {
+      document.body.classList.remove("print-mode");
+      btnPdf.textContent = originalText;
+      btnPdf.disabled = false;
+      
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      
+      const fileName = `teklif_${currentTeklifNo || 'yeni'}.pdf`;
+      const pdfBlob = pdf.output('blob');
+      
+      // Önce paylaşım seçeneğini dene (iOS, Android)
+      if (navigator.share) {
+        const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+        navigator.share({
+          files: [file],
+          title: 'Teklif PDF',
+          text: `${currentTeklifNo} numaralı teklif`
+        }).catch(err => {
+          if (err.name !== 'AbortError') {
+            // Paylaşım başarısız olursa indir
+            pdf.save(fileName);
+          }
+        });
+      } else {
+        // Paylaşım API yoksa direkt indir
+        pdf.save(fileName);
+      }
+      
+    }).catch(err => {
+      document.body.classList.remove("print-mode");
+      btnPdf.textContent = originalText;
+      btnPdf.disabled = false;
+      console.error('PDF oluşturulamadı:', err);
+      alert('PDF oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.');
+    });
+  }, 500);
 }
 
-/* ============ WHATSAPP'A GÖNDER ============
-   PDF dosyasını tarayıcı otomatik ekleyemediği için (web'in genel bir
-   kısıtı) müşteri ile WhatsApp sohbetini hazır metinle açar; PDF'i az
-   önce yazdırdığınız/kaydettiğiniz dosyayı sohbete elle eklemeniz yeterli. */
+/* ============ WHATSAPP'A GÖNDER ============ */
 function sendViaWhatsapp(){
   const tel = document.getElementById("custTel").value.trim();
   if(tel.replace(/\D/g,"").length < 10){
@@ -1421,8 +1511,9 @@ function init(){
   document.getElementById("btnAddManual").addEventListener("click", ()=>addRow("manual"));
   document.getElementById("btnNew").addEventListener("click", resetForm);
   document.getElementById("btnSave").addEventListener("click", ()=>saveCurrentQuote(false));
-  document.getElementById("btnPdf").addEventListener("click", openPrintForPdf);
+  document.getElementById("btnPdf").addEventListener("click", generatePDF);
   document.getElementById("btnWhatsapp").addEventListener("click", sendViaWhatsapp);
+  
   window.addEventListener("beforeprint", ()=>{
     document.body.classList.add("print-mode");
     buildPrintView();
